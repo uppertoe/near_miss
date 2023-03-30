@@ -5,3 +5,4 @@ db.sqlite3
 docker-compose-prod.yml
 .vscode
 development.txt
+.env
