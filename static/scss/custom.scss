@@ -1,18 +1,16 @@
 // Custom variables
-$white: #030000;
+$white: #1d4378;
 
 $theme-colors: (
-    "light": #fc764b,
-    "dark": #f1e9de,
-    "primary": #79c4b8,
-    "secondary": #05a398,
-    "info": #22686b,
-    "accent1": #1b292e,
-    "accent2": #798850,
-    "accent3": #749140,
-    "success": #02aa41,
-    "warning": #f1c702,
-    "danger": #f60139,
+    "light": #fdcd7a,
+    "dark": #9fde70,
+    "primary": #f8cb0c,
+    "secondary": #e34838,
+    "info": #663121,
+    "success": #4aaf02,
+    "warning": #ffc351,
+    "danger": #f7015c,
 );
+
 // Import Bootstrap
 @import "../bootstrap/scss/bootstrap";
