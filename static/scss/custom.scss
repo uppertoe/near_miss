@@ -12,5 +12,7 @@ $theme-colors: (
     "danger": #f7015c,
 );
 
+$btn-close-color: $white;
+
 // Import Bootstrap
 @import "../bootstrap/scss/bootstrap";
