@@ -122,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = env('DJANGO_TIME_ZONE', default='Australia/Melbourne')
+TIME_ZONE = env('TIME_ZONE', default='Australia/Melbourne')
 
 USE_I18N = True
 
@@ -149,6 +149,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 COMPRESS_PRECOMPILERS = (
     ('text/x-scss', 'django_libsass.SassCompiler'),
 )
+COMPRESS_OFFLINE = env.bool('COMPRESS_OFFLINE', default=True)
+LIBSASS_OUTPUT_STYLE = env('LIBSASS_OUTPUT_STYLE', default='compressed')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

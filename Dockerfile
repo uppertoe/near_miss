@@ -25,7 +25,8 @@ RUN set -ex && \
 
 COPY . /code/
 
-RUN python manage.py collectstatic --noinput
+RUN python manage.py collectstatic --noinput && \
+    python manage.py compress
 
 EXPOSE 8000
 
