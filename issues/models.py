@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.db import models
 from django.conf import settings
 from core.models import TimeStampedModel
@@ -11,6 +12,18 @@ class Issue(models.Model):
         null=False,
         )
     active = models.BooleanField(default=True)
+    comments = models.ManyToManyField('Comment', through='Tag')
+
+    def __str__(self):
+        return self.text
+
+
+class Tag(TimeStampedModel):
+    comment = models.ForeignKey('Comment', on_delete=models.CASCADE)
+    issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.issue) + ': ' + str(self.comment)
 
 
 class Comment(TimeStampedModel):
@@ -23,56 +36,69 @@ class Comment(TimeStampedModel):
     )
 
     def hashtag_list(self):
+        '''Returns a list of unique 'hashtag' strings'''
         hashtag_list = []
         for word in self.text.split():
             if word[0] == '#':
                 # Remove the hash character and limit length to 255
                 hashtag_list.append(word[1:255])
-        return hashtag_list
+        return list(set(hashtag_list))
     
-    def create_issues(self):
+    def create_issues(self, hashtag_list):
         '''
         Creates an Issue for each unique hashtag if not present
         Returns a dict {'hashtag': Issue}
         '''
-        hashtag_set = set(self.hashtag_list())
-        issue_dict = Issue.objects.in_bulk(hashtag_set, field_name='text')
-        for hashtag in hashtag_set:
-            issue = issue_dict.get(hashtag)
-            if not issue:
+        issue_dict = Issue.objects.in_bulk(hashtag_list, field_name='text')
+        for hashtag in hashtag_list:
+            if hashtag not in issue_dict:
                 issue = Issue(text=hashtag)
                 issue.save()
                 issue_dict[hashtag] = issue
         return issue_dict
-        
+    
+    def get_self_tag_dict(self):
+        '''Returns {'hashtag': [Tags]}'''
+        dict = defaultdict(list)
+        for tag in self.tag_set.all():
+            dict[tag.issue.text].append(tag)
+        return dict
+
     def create_tags(self):
         '''
-        One tag will be created for each unique hashtag in self.text
+        Creates Issues where necessary
+        Deletes and Creates Tags according to the current state of self.hashtag_list()
+        Returns a list of the new tags created
         '''
-        issue_dict = self.create_issues() #  {'hashtag': Issue}
-        tags_list = []
-        for issue in issue_dict.values():
-            tag = Tag(comment=self, issue=issue)
-            tag.save()
-            tags_list.append(tag)
-        return tags_list
+
+        hashtag_list = self.hashtag_list()
+        tag_dict = self.get_self_tag_dict()
+        issue_dict = self.create_issues(hashtag_list)
+        new_tags = []
+        
+        # Remove redundant tags
+        for key, values in tag_dict.items():
+            if key not in hashtag_list:
+                for tag in values:
+                    tag.delete()
+        
+        # Create missing tags
+        for hashtag in hashtag_list:
+            if hashtag not in tag_dict:
+                issue = issue_dict[hashtag]
+                tag = Tag(comment=self, issue=issue)
+                tag.save()
+                new_tags.append(tag)
+        
+        return new_tags
 
     def short_comment(self, length=10):
         return self.text[:(length-3)] + '...' if len(self.text) > length else self.text
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        tags = self.create_tags()
+        print(tags)
 
     def __str__(self):
         return self.short_comment(10)
-
-
-class Tag(TimeStampedModel):
-    comment = models.ForeignKey(
-        Comment,
-        on_delete=models.CASCADE,
-        )
-    issue = models.ForeignKey(
-        Issue,
-        on_delete=models.CASCADE
-        )
-
-    def __str__(self):
-        return self.issue + ': ' + self.comment
