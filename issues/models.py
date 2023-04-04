@@ -23,7 +23,7 @@ class Tag(TimeStampedModel):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.issue) + ': ' + str(self.comment)
+        return '#' + str(self.issue) + ': ' + str(self.comment)
 
 
 class Comment(TimeStampedModel):
@@ -36,7 +36,9 @@ class Comment(TimeStampedModel):
     )
 
     def hashtag_list(self):
-        '''Returns a list of unique 'hashtag' strings'''
+        '''
+        Returns a list of unique 'hashtag' strings
+        '''
         hashtag_list = []
         for word in self.text.split():
             if word[0] == '#':
@@ -58,7 +60,9 @@ class Comment(TimeStampedModel):
         return issue_dict
     
     def get_self_tag_dict(self):
-        '''Returns {'hashtag': [Tags]}'''
+        '''
+        Returns {'hashtag': [Tags]}
+        '''
         dict = defaultdict(list)
         for tag in self.tag_set.all():
             dict[tag.issue.text].append(tag)
@@ -92,13 +96,12 @@ class Comment(TimeStampedModel):
         
         return new_tags
 
-    def short_comment(self, length=10):
+    def short_comment(self, length=20):
         return self.text[:(length-3)] + '...' if len(self.text) > length else self.text
     
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        tags = self.create_tags()
-        print(tags)
+        self.create_tags()
 
     def __str__(self):
-        return self.short_comment(10)
+        return self.short_comment(20)

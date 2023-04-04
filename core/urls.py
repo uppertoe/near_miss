@@ -42,6 +42,6 @@ if settings.DEBUG:
     ] + urlpatterns
 
 # Admin site customisation
-admin.site.site_header = "JournalWatch.org.au"
-admin.site.site_title = "JournalWatch.org.au administration"
-admin.site.index_title = "JournalWatch.org.au Admin"
+admin.site.site_header = "nearmiss.report"
+admin.site.site_title = "nearmiss.report administration"
+admin.site.index_title = "nearmiss.report Admin"
