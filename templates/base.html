@@ -29,10 +29,10 @@
             </div>
             <div class="offcanvas-body">
                 <div class="navbar-nav h4">
-                    <a class="nav-link active" aria-current="page" href="#">GRIPE</a>
+                    <a class="nav-link active" aria-current="page" href="{% url 'comment-create' %}">nearmiss</a>
                     <a class="nav-link" href="#">About</a>
-                    <a class="nav-link" href="#">Stats</a>
-                    <a class="nav-link disabled">Login</a>
+                    <a class="nav-link" href="{% url 'comment-list' %}">Comments</a>
+                    <a class="nav-link" href="{% url 'admin:index' %}">Login</a>
                 </div>
             </div>
         </div>

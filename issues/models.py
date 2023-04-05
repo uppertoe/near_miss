@@ -1,7 +1,11 @@
 from collections import defaultdict
 from django.db import models
 from django.conf import settings
+from django.utils.text import slugify
+from django.utils.html import escape, format_html
+from django.urls import reverse
 from core.models import TimeStampedModel
+from core.utils import unique_slugify
 
 
 class Issue(models.Model):
@@ -11,8 +15,17 @@ class Issue(models.Model):
         blank=False,
         null=False,
         )
+    slug = models.SlugField(max_length=255, null=False, blank=True, unique=True)
     active = models.BooleanField(default=True)
-    comments = models.ManyToManyField('Comment', through='Tag')
+    comments = models.ManyToManyField('Comment', through='Tag', related_name='issues')
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slugify(self, slugify(self.text))
+        return super().save(*args, **kwargs)
+    
+    def get_absolute_url(self):
+        return reverse('issue-detail', kwargs={'slug': self.slug})
 
     def __str__(self):
         return self.text
@@ -34,6 +47,7 @@ class Comment(TimeStampedModel):
         blank=True,
         null=True,
     )
+    slug = models.SlugField(max_length=255, null=False, blank=True, unique=True)
 
     def hashtag_list(self):
         '''
@@ -45,8 +59,8 @@ class Comment(TimeStampedModel):
                 # Remove the hash character and limit length to 255
                 hashtag_list.append(word[1:255])
         return list(set(hashtag_list))
-    
-    def create_issues(self, hashtag_list):
+ 
+    def create_issue_dict(self, hashtag_list, hash_char=False):
         '''
         Creates an Issue for each unique hashtag if not present
         Returns a dict {'hashtag': Issue}
@@ -57,7 +71,7 @@ class Comment(TimeStampedModel):
                 issue = Issue(text=hashtag)
                 issue.save()
                 issue_dict[hashtag] = issue
-        return issue_dict
+        return {'#'+key: value for key, value in issue_dict.items()} if hash_char else issue_dict
     
     def get_self_tag_dict(self):
         '''
@@ -77,7 +91,7 @@ class Comment(TimeStampedModel):
 
         hashtag_list = self.hashtag_list()
         tag_dict = self.get_self_tag_dict()
-        issue_dict = self.create_issues(hashtag_list)
+        issue_dict = self.create_issue_dict(hashtag_list)
         new_tags = []
         
         # Remove redundant tags
@@ -95,13 +109,33 @@ class Comment(TimeStampedModel):
                 new_tags.append(tag)
         
         return new_tags
+    
+    def get_text_links(self):
+        '''
+        Adds links to issues for each #word in self.text
+        '''
+        text = escape(self.text)
+        hashtag_dict = self.create_issue_dict(self.hashtag_list(), hash_char=True)
+        link = '<a href="{}" class="text-decoration-none">{}</a>'
+        output = []
+        for word in text.split():
+            issue = hashtag_dict.get(word)
+            if issue:
+                word = format_html(link, issue.get_absolute_url(), word)
+            output.append(word)
+        return ' '.join(output)
 
-    def short_comment(self, length=20):
+    def short_comment_ellipsis(self, length=20):
         return self.text[:(length-3)] + '...' if len(self.text) > length else self.text
     
     def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slugify(self, slugify(self.text[:20]))
         super().save(*args, **kwargs)
         self.create_tags()
 
+    def get_absolute_url(self):
+        return reverse("comment-detail", kwargs={"slug": self.slug})
+    
     def __str__(self):
-        return self.short_comment(20)
+        return self.short_comment_ellipsis(20)
