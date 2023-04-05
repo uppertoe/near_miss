@@ -58,7 +58,7 @@ class Comment(TimeStampedModel):
         '''
         hashtag_list = []
         for word in self.text.split():
-            if word[0] == '#':
+            if word[0] == '#' and len(word) > 1:
                 # Remove the hash character and limit length to 255
                 hashtag_list.append(word[1:255])
         return list(set(hashtag_list))
