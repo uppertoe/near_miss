@@ -15,9 +15,10 @@ class IssueListView(ListView):
     model = Issue
     context_object_name = 'issue_list'
     template_name = 'issues/issue_list.html'
-    queryset = Issue.objects.all().annotate(
-        comment_count=Count('comments')
-    ).order_by('-comment_count')[:5]
+    queryset = (Issue.objects
+                .exclude(active=False)
+                .annotate(comment_count=Count('comments'))
+                .order_by('-comment_count')[:5])
     
 
 class CommentDetailView(DetailView):
@@ -35,6 +36,7 @@ class CommentListView(ListView):
     model = Comment
     context_object_name = 'comment_list'
     template_name = 'issues/comment_list.html'
+    queryset = Comment.objects.all().order_by('-created')
 
 
 class CommentCreateView(CreateView):

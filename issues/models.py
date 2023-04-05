@@ -60,10 +60,10 @@ class Comment(TimeStampedModel):
         for word in self.text.split():
             if word[0] == '#' and len(word) > 1:
                 # Remove the hash character and limit length to 255
-                hashtag_list.append(word[1:255])
+                hashtag_list.append(slugify(word[1:255]))
         return list(set(hashtag_list))
  
-    def create_issue_dict(self, hashtag_list, hash_char=False):
+    def create_issue_dict(self, hashtag_list):
         '''
         Creates an Issue for each unique hashtag if not present
         Returns a dict {'hashtag': Issue}
@@ -74,7 +74,7 @@ class Comment(TimeStampedModel):
                 issue = Issue(text=hashtag)
                 issue.save()
                 issue_dict[hashtag] = issue
-        return {'#'+key: value for key, value in issue_dict.items()} if hash_char else issue_dict
+        return issue_dict
     
     def get_self_tag_dict(self):
         '''
@@ -117,13 +117,16 @@ class Comment(TimeStampedModel):
         Adds links to issues for each #word in self.text
         '''
         text = escape(self.text)
-        hashtag_dict = self.create_issue_dict(self.hashtag_list(), hash_char=True)
+        hashtag_dict = self.create_issue_dict(self.hashtag_list())
         link = '<a href="{}" class="text-decoration-none">{}</a>'
         output = []
         for word in text.split():
-            issue = hashtag_dict.get(word)
-            if issue:
-                word = format_html(link, issue.get_absolute_url(), word)
+            if word[0] == '#' and len(word) > 1:
+                issue = hashtag_dict.get(slugify(word))
+                if not issue:
+                    continue
+                if issue.active:
+                    word = format_html(link, issue.get_absolute_url(), word)
             output.append(word)
         return ' '.join(output)
 
