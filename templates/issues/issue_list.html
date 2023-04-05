@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container">
+    <h1>Displaying the top 5 issues:</h1>
+    {% for issue in issue_list %}
+    <div class="alert alert-secondary" role="alert">
+        <strong><a href="{{ issue.get_absolute_url }}" class="alert-link">#{{ issue.text }}</a></strong>: {{ issue.comment_count }} instance{{ issue.comment_count|pluralize }}
+    </div>
+    {% endfor %}
+</div>
+{% endblock body %}

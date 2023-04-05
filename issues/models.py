@@ -19,6 +19,9 @@ class Issue(models.Model):
     active = models.BooleanField(default=True)
     comments = models.ManyToManyField('Comment', through='Tag', related_name='issues')
 
+    def issue_count(self):
+        return self.comments.all().count()
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = unique_slugify(self, slugify(self.text))
@@ -88,7 +91,6 @@ class Comment(TimeStampedModel):
         Deletes and Creates Tags according to the current state of self.hashtag_list()
         Returns a list of the new tags created
         '''
-
         hashtag_list = self.hashtag_list()
         tag_dict = self.get_self_tag_dict()
         issue_dict = self.create_issue_dict(hashtag_list)

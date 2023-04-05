@@ -16,7 +16,7 @@
 <navbar>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-3" >
         <div class="container-fluid">
-          <a class="navbar-brand p-3" href="#">
+          <a class="navbar-brand p-3" href="{% url 'comment-create' %}">
             <img src="{% static 'images/paper-plane.svg' %}" alt="Logo" width="50" height="40">
           </a>
           <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvasLg" aria-controls="navbarOffcanvasLg" aria-label="Toggle navigation">
@@ -30,8 +30,8 @@
             <div class="offcanvas-body">
                 <div class="navbar-nav h4">
                     <a class="nav-link active" aria-current="page" href="{% url 'comment-create' %}">nearmiss</a>
-                    <a class="nav-link" href="#">About</a>
                     <a class="nav-link" href="{% url 'comment-list' %}">Comments</a>
+                    <a class="nav-link" href="{% url 'issue-list' %}">Top Issues</a>
                     <a class="nav-link" href="{% url 'admin:index' %}">Login</a>
                 </div>
             </div>

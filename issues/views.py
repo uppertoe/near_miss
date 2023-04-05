@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.db.models import Count
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, CreateView
 from .models import Issue, Comment
@@ -9,6 +9,15 @@ class IssueDetailView(DetailView):
     context_object_name = 'issue'
     template_name = 'issues/issue_detail.html'
     queryset = Issue.objects.all().exclude(active=False)
+
+
+class IssueListView(ListView):
+    model = Issue
+    context_object_name = 'issue_list'
+    template_name = 'issues/issue_list.html'
+    queryset = Issue.objects.all().annotate(
+        comment_count=Count('comments')
+    ).order_by('-comment_count')[:5]
     
 
 class CommentDetailView(DetailView):
