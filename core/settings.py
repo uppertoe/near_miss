@@ -152,6 +152,23 @@ COMPRESS_PRECOMPILERS = (
 )
 COMPRESS_OFFLINE = env.bool('COMPRESS_OFFLINE', default=True)
 LIBSASS_OUTPUT_STYLE = env('LIBSASS_OUTPUT_STYLE', default='compressed')
+COMPRESS_ENABLED = True
+COMPRESS_CSS_HASHING_METHOD = 'content'
+COMPRESS_FILTERS = {
+    'css':[
+        'compressor.filters.css_default.CssAbsoluteFilter',
+        'compressor.filters.cssmin.rCSSMinFilter',
+        'compressor_postcss.PostCSSFilter',
+    ],
+    'js':[
+        'compressor.filters.jsmin.JSMinFilter',
+    ]
+}
+
+# postcss-cli
+COMPRESS_POSTCSS_PLUGINS = (
+    'autoprefixer',
+)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

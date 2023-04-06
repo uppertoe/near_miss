@@ -13,6 +13,7 @@ django-allauth==0.51.0
 django-appconf==1.0.5
 django-cache-url==3.4.4
 django-compressor==4.3.1
+django-compressor-postcss==0.8.2
 django-crispy-forms==1.14.0
 django-debug-toolbar==3.7.0
 django-libsass==0.9
@@ -25,7 +26,6 @@ marshmallow==3.19.0
 oauthlib==3.2.2
 packaging==23.0
 psycopg2==2.9.5
-psycopg2-binary==2.9.5
 pycparser==2.21
 PyJWT==2.6.0
 python-dotenv==1.0.0

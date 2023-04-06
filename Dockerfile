@@ -9,11 +9,17 @@ RUN mkdir -p /code
 
 WORKDIR /code
 
-# install psycopg2 dependencies
+# install psycopg2 + npm dependencies
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     gcc \
     g++ \
+    curl \
+    && curl -fsSL https://deb.nodesource.com/setup_19.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g \
+    postcss-cli \
+    autoprefixer \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /tmp/requirements.txt
@@ -26,7 +32,7 @@ RUN set -ex && \
 COPY . /code/
 
 RUN python manage.py collectstatic --noinput && \
-    python manage.py compress
+    python manage.py compress --force
 
 EXPOSE 8000
 
