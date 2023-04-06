@@ -116,19 +116,24 @@ class Comment(TimeStampedModel):
         '''
         Adds links to issues for each #word in self.text
         '''
-        text = escape(self.text)
+        text_newline_list = self.text.splitlines()
         hashtag_dict = self.create_issue_dict(self.hashtag_list())
         link = '<a href="{}" class="text-decoration-none">{}</a>'
-        output = []
-        for word in text.split():
-            if word[0] == '#' and slugify(word):
-                issue = hashtag_dict.get(slugify(word))
-                if not issue:
-                    continue
-                if issue.active:
-                    word = format_html(link, issue.get_absolute_url(), word)
-            output.append(word)
-        return ' '.join(output)
+        output_lines = []
+
+        for line in text_newline_list:
+            text = escape(line)
+            output = []
+            for word in text.split():
+                if word[0] == '#' and slugify(word):
+                    issue = hashtag_dict.get(slugify(word))
+                    if not issue:
+                        continue
+                    if issue.active:
+                        word = format_html(link, issue.get_absolute_url(), word)
+                output.append(word)
+            output_lines.append(' '.join(output))
+        return '<br>'.join(output_lines)
 
     def short_comment_ellipsis(self, length=20):
         return self.text[:(length-3)] + '...' if len(self.text) > length else self.text
