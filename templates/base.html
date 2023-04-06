@@ -30,9 +30,9 @@
             <div class="offcanvas-body">
                 <div class="navbar-nav h4">
                     <a class="nav-link active" aria-current="page" href="{% url 'comment-create' %}">nearmiss</a>
-                    <a class="nav-link" href="{% url 'comment-list' %}">Comments</a>
-                    <a class="nav-link" href="{% url 'issue-list' %}">Top Issues</a>
-                    <a class="nav-link" href="{% url 'admin:index' %}">Login</a>
+                    <a class="nav-link {% if comment_list or comment %}active{% endif %}" href="{% url 'comment-list' %}">Comments</a>
+                    <a class="nav-link {% if issue_list or issue %}active{% endif %}" href="{% url 'issue-list' %}">Top Issues</a>
+                    <a class="nav-link {% if admin %}active{% endif %}" href="{% url 'admin:index' %}">Login</a>
                 </div>
             </div>
         </div>

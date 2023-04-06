@@ -58,9 +58,9 @@ class Comment(TimeStampedModel):
         '''
         hashtag_list = []
         for word in self.text.split():
-            if word[0] == '#' and len(word) > 1:
+            if word[0] == '#' and slugify(word):
                 # Remove the hash character and limit length to 255
-                hashtag_list.append(slugify(word[1:255]))
+                hashtag_list.append(slugify(word[:255]))
         return list(set(hashtag_list))
  
     def create_issue_dict(self, hashtag_list):
@@ -121,7 +121,7 @@ class Comment(TimeStampedModel):
         link = '<a href="{}" class="text-decoration-none">{}</a>'
         output = []
         for word in text.split():
-            if word[0] == '#' and len(word) > 1:
+            if word[0] == '#' and slugify(word):
                 issue = hashtag_dict.get(slugify(word))
                 if not issue:
                     continue

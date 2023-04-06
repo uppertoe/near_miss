@@ -8,7 +8,7 @@
         <div class="card text-bg-light mt-3">
         <div class="card-body">
             <h5 class="card-title text-body-primary">Comment on {{comment.created|date:"jS F Y"}}</h5>
-            <p class="card-text">{{ comment.get_text_links | safe }}</p>
+            <p class="card-text">{{ comment.get_text_links|safe }}</p>
         </div>
         </div>
     </div>
