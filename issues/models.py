@@ -18,9 +18,14 @@ class Issue(models.Model):
     slug = models.SlugField(max_length=255, null=False, blank=True, unique=True)
     active = models.BooleanField(default=True)
     comments = models.ManyToManyField('Comment', through='Tag', related_name='issues')
-
-    def issue_count(self):
-        return self.comments.all().count()
+    
+    def all_issues_list():
+       issues = (Issue.objects.all()
+                 .exclude(active=False)
+                 .annotate(comment_count=models.Count('comments'))
+                 .order_by('-comment_count')
+                 .values_list('text', flat=True))
+       return [str(issue) for issue in issues]
 
     def save(self, *args, **kwargs):
         if not self.slug:

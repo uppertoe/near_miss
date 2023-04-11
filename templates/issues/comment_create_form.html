@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
+{% block js %}
+<script src="{% static 'js/tag_suggest.js' %}" defer data-url="{% url 'ajax-tags' %}"></script>
+{% endblock js %}
+
 {% block body %}
 <div class="container col-xl-10 col-xxl-8 px-4 pt-2">
     <div class="row align-items-center g-lg-5 py-5">
@@ -9,12 +14,13 @@
         <p class="col-lg-10 fs-4">Near-misses, equipment issues and discussion points are all fair game.</p>
       </div>
       <div class="col-md-10 mx-auto col-lg-6">
-        <form class="p-4 p-md-5 border rounded-3 bg-body-tertiary" method="post">
+        <form class="p-4 p-md-5 border rounded-3 bg-body-tertiary" method="post" id="form-comment">
             <h3 class="fw-bold lh-1 text-body-emphasis mb-3">Comment here:</h3>
             {% csrf_token %}
             {{ form | crispy }}
             <button class="w-100 btn btn-lg btn-primary" type="submit">Submit</button>
             <hr class="my-2">
+            <div id="tags"></div>
             <small class="text-body-secondary">Use #hashtags to categorise #issues for the department to review</small>
         </form>
       </div>
