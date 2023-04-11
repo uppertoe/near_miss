@@ -14,5 +14,9 @@ $theme-colors: (
 
 $btn-close-color: $white;
 
+.asteriskField {
+    display: none;
+}
+
 // Import Bootstrap
 @import "../bootstrap/scss/bootstrap";

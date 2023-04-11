@@ -9,7 +9,7 @@ function buildHtml(array) {
     div.classList.add("row", "text-primary")
     for (let i = 0; i < array.length; i++) {
         let tag = document.createElement("a")
-        tag.classList.add("col", "text-decoration-none")
+        tag.classList.add("col-2", "text-decoration-none")
         tag.role = "button"
         tag.innerHTML = '#' + array[i]
         div.append(tag)
@@ -40,6 +40,8 @@ function readInput(input, array, parent, result_count) {
         distinctMatches = [...new Set(matches)].slice(0, result_count);
         if (!distinctMatches.length == 0) {
             parent.innerHTML = buildHtml(distinctMatches).outerHTML
+        } else {
+            parent.innerHTML = "Topic suggestions appear here"
         }
     })
 }
@@ -67,7 +69,7 @@ tagsDiv.addEventListener("click", function (e) {
     let a = e.target.closest('a');
     if (!a) return;
     if (!tagsDiv.contains(a)) return;
-    commentText.value += (" " + a.innerText);
+    commentText.value += (" " + a.innerText + " ");
     commentText.focus()
 })
 
