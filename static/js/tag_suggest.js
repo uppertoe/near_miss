@@ -6,7 +6,7 @@ const tagsDiv = document.getElementById("tags");
 
 function buildHtml(array) {
     let div = document.createElement("div")
-    div.classList.add("row", "text-primary", "mb-2")
+    div.classList.add("row", "text-primary")
     for (let i = 0; i < array.length; i++) {
         let tag = document.createElement("a")
         tag.classList.add("col", "text-decoration-none")
@@ -38,7 +38,9 @@ function readInput(input, array, parent, result_count) {
             matches = matches.concat((searchWord(textArray[i], array)))
         }
         distinctMatches = [...new Set(matches)].slice(0, result_count);
-        parent.innerHTML = buildHtml(distinctMatches).outerHTML
+        if (!distinctMatches.length == 0) {
+            parent.innerHTML = buildHtml(distinctMatches).outerHTML
+        }
     })
 }
 
