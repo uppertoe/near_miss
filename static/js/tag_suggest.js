@@ -67,7 +67,10 @@ tagsDiv.addEventListener("click", function (e) {
     let a = e.target.closest('a');
     if (!a) return;
     if (!tagsDiv.contains(a)) return;
-    commentText.value += (" " + a.innerText + " ");
+    if (commentText.value.substr(commentText.value.length - 1, 1) != " ") {
+        commentText.value += (" ");
+    }
+    commentText.value += (a.innerText + " ");
     commentText.focus();
 })
 
