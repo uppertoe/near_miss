@@ -3,31 +3,30 @@ const url = data.url;
 const commentText = document.getElementById("id_text");
 const tagsDiv = document.getElementById("tags");
 
-
 function buildHtml(array) {
-    let div = document.createElement("div")
-    div.classList.add("row", "text-primary")
+    let div = document.createElement("div");
+    div.classList.add("row", "text-primary");
     for (let i = 0; i < array.length; i++) {
-        let tag = document.createElement("a")
-        tag.classList.add("col", "text-decoration-none")
-        tag.role = "button"
-        tag.innerHTML = '#' + array[i]
-        div.append(tag)
+        let tag = document.createElement("a");
+        tag.classList.add("col", "text-decoration-none");
+        tag.role = "button";
+        tag.innerHTML = '#' + array[i];
+        div.append(tag);
     }
-    return div
+    return div;
 }
 
 function searchWord(word, array) {
-    /* Returns an array of matching hashtags */
     let output = [];
+    word = word.replace(/\W/g, '') /* Remove non-alphanumeric */
     if (word.length > 2) {
         for (let i = 0; i < array.length; i++) {
-            if (array[i].substr(0, word.length).toUpperCase() == word.toUpperCase()) {
-                output.push(array[i])
+            if (word.toUpperCase().includes(array[i].substr(0, word.length).toUpperCase())) {
+                output.push(array[i]);
             }
         }
     }
-    return output
+    return output;
 }
 
 function readInput(input, array, parent, result_count) {
@@ -35,17 +34,16 @@ function readInput(input, array, parent, result_count) {
         const textArray = this.value.split(' ');
         let matches = [];
         for (let i = 0; i < textArray.length; i++) {
-            matches = matches.concat((searchWord(textArray[i], array)))
+            matches = matches.concat((searchWord(textArray[i], array)));
         }
         distinctMatches = [...new Set(matches)].slice(0, result_count);
         if (!distinctMatches.length == 0) {
-            parent.innerHTML = buildHtml(distinctMatches).outerHTML
+            parent.innerHTML = buildHtml(distinctMatches).outerHTML;
         } else {
-            parent.innerHTML = "Topic suggestions appear here"
+            parent.innerHTML = "Topic suggestions appear here";
         }
     })
 }
-
 
 function getTags() {
     fetch(url, {
@@ -70,7 +68,7 @@ tagsDiv.addEventListener("click", function (e) {
     if (!a) return;
     if (!tagsDiv.contains(a)) return;
     commentText.value += (" " + a.innerText + " ");
-    commentText.focus()
+    commentText.focus();
 })
 
-getTags()
+getTags();
