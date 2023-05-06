@@ -1,15 +1,12 @@
+# Dockerfile with multi-stage build
 ARG PYTHON_VERSION=3.10-slim-buster
 
-FROM python:${PYTHON_VERSION}
+# Stage 1: Install dependencies
+FROM python:${PYTHON_VERSION} AS build
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-RUN mkdir -p /code
-
-WORKDIR /code
-
-# install psycopg2 + npm dependencies
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     gcc \
@@ -22,12 +19,18 @@ RUN apt-get update && apt-get install -y \
     autoprefixer \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt /tmp/requirements.txt
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-RUN set -ex && \
-    pip install --upgrade pip && \
-    pip install -r /tmp/requirements.txt && \
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r /tmp/requirements.txt && \
     rm -rf /root/.cache/
+
+# Stage 2: Build the app
+FROM build AS app
+
+WORKDIR /code
 
 COPY . /code/
 
